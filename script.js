@@ -4,11 +4,16 @@ let safetyData = {}; // Object to store safety data for each route segment
 
 // Function to initialize the map
 function initMap() {
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
     // Initialize the map with default options
         map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 30.2672, lng: -97.7431 }, // Default to Austin
         zoom: 10, // Default zoom level
     });
+    directionsRenderer.setMap(map);
+    // Add event listener for the route calculation button
+    document.getElementById("calculate-route-btn").addEventListener("click", handleRouteCalculation);
 }
 
 // Function to fetch safety data from external API
@@ -28,16 +33,12 @@ async function fetchSafetyData(start, end) {
 
 // Function to calculate walking routes between two points
 function calculateRoute(start, end) {
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
-
     const request = {
         origin: start,
         destination: end,
         travelMode: google.maps.TravelMode.WALKING,
+        provideRouteAlternatives: true
     };
-
 
     directionsService.route(request, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
@@ -59,12 +60,9 @@ function calculateRoute(start, end) {
 
 // Function to handle user input and trigger route calculation
 function handleRouteCalculation() {
-    const start = document.getElementById("start").value;
-    const end = document.getElementById("end").value;
+    const start = document.getElementById('start').value;
+    const end = document.getElementById('end').value;
 
     // Trigger route calculation and safety data fetching
     calculateRoute(start, end);
 }
-
-// Add event listener for the route calculation button
-document.getElementById("calculate-route-btn").addEventListener("click", handleRouteCalculation);
