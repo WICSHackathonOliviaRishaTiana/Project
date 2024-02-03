@@ -4,11 +4,10 @@
 <head>
   <meta charset="utf-8">
   <title>Pedestrian Safety</title>
+  <script type="text/javascript" src="script.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBovKy8txAWzKMLCP0SPRZBot_VGRPRQgU&callback=initMap" async defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
   <link rel="stylesheet" href="CSS/styles.css">
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
   <link rel="manifest" href="favicon_io/site.webmanifest">
   <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet'>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -38,56 +37,7 @@
       </ul>
     </div>
   </nav>
-  <div class="row" id="options">
-    <div class="card col-lg-2" style="width: 18rem;">
-      <div class="card-body">
-        <a href="#">Summer Collection</a>
-        <p class="card-text"> This collection is made of 5 Summer-scenting candles. Enjoy the scent of the beach and fresh fruits from the comfort of your own home!</p>
-
-      </div>
-    </div>
-    <div class="card col-lg-2" style="width: 18rem;">
-      <div class="card-body">
-        <a href="#">Fall Collection</a>
-        <p class="card-text">This collection is made of 5 homely candles. Relive the Fall season with this cozy, nature scented candles.</p>
-        <br><br><br>
-
-      </div>
-    </div>
-    <div class="card col-lg-2" style="width: 18rem;">
-      <div class="card-body">
-        <a href="#">Winter Collection</a>
-        <p class="card-text">This collection is made of 5 candles for when you are missing the Winter season. Reminisce the scent of Christmas and pine trees.</p>
-        <br>
-
-      </div>
-    </div>
-    <div class="card col-lg-2" style="width: 18rem;">
-    <div class="card-body">
-      <a href="#">Spring Collection</a>
-      <p class="card-text">This collection is made of 5 gorgeous, pastel candles. The scent of flowers and freshness are reminscent of the Spring season.</p>
-      <br><br>
-    </div>
-  </div>
-  </div>
-  <hr>
-  <form >
-    <div class="form-group row">
-      <label for="exampleFormControlInput1" class= "col-lg-2">Join our monthly newsletter!</label>
-      <input type="email" class="form-control col-lg-2" id="exampleFormControlInput1" placeholder="Email Address">
-    </div>
-  </form>
-  <br>
-  <p id="follow" >Follow Our Socials!</p>
-  <div class="row" id="socials">
-    <a href="#" class="fa fa-facebook col-1"></a>
-    <a href="#" class="fa fa-twitter col-1"></a>
-    <a href="#" class="fa fa-instagram col-1"></a>
-  </div>
-  <br>
+  <div id="map"></div>
 </body>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
 
 </html>
