@@ -6,7 +6,7 @@ let safetyData = {}; // Object to store safety data for each route segment
 function initMap() {
     // Initialize the map with default options
         map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 30.2672, lng: 97.7431 }, // Default to Austin
+        center: { lat: 30.2672, lng: -97.7431 }, // Default to Austin
         zoom: 10, // Default zoom level
     });
 }
@@ -40,19 +40,27 @@ function calculateRoute(start, end) {
     directionsService.route(request, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
-
-            // Once the route is calculated, fetch safety data for each route segment
-            // Replace "response.routes[0].legs" with the appropriate path in the response object
-            const routeSegments = response.routes[0].legs;
-            routeSegments.forEach(segment => {
-                const start = segment.start_location;
-                const end = segment.end_location;
-                fetchSafetyData(start, end);
-            });
         } else {
             console.error("Error calculating route:", status);
         }
-    });
+    })
+
+    // directionsService.route(request, function(response, status) {
+    //     if (status === google.maps.DirectionsStatus.OK) {
+    //         directionsRenderer.setDirections(response);
+
+    //         // Once the route is calculated, fetch safety data for each route segment
+    //         // Replace "response.routes[0].legs" with the appropriate path in the response object
+    //         const routeSegments = response.routes[0].legs;
+    //         routeSegments.forEach(segment => {
+    //             const start = segment.start_location;
+    //             const end = segment.end_location;
+    //             fetchSafetyData(start, end);
+    //         });
+    //     } else {
+    //         console.error("Error calculating route:", status);
+    //     }
+    // });
 }
 
 // Function to handle user input and trigger route calculation
