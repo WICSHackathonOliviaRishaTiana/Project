@@ -10,6 +10,20 @@
   <link rel="stylesheet" href="CSS/styles.css">
   <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet'>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    /* Style the input fields */
+    .autocomplete-container {
+        margin: 20px;
+    }
+    input[type="text"] {
+        width: 300px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+  </style>
 </head>
 
 <body>
@@ -39,9 +53,31 @@
   </nav>
   <div style = "height: 500px; width: 500px" id="map">
   </div>
+
+  <div class="autocomplete-container">
+    <label for="start">Start Location:</label>
+    <input type="text" id="start" placeholder="Enter start location">
+</div>
+
+<div class="autocomplete-container">
+    <label for="end">End Location:</label>
+    <input type="text" id="end" placeholder="Enter end location">
+</div>
+
+<script>
+    // Initialize Google Places Autocomplete for start and end inputs
+    function initializeAutocomplete() {
+        var startInput = document.getElementById('start');
+        var endInput = document.getElementById('end');
+
+        var autocompleteStart = new google.maps.places.Autocomplete(startInput);
+        var autocompleteEnd = new google.maps.places.Autocomplete(endInput);
+    }
+
+    // Load the Google Maps Places library and initialize autocomplete
+    google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
+</script>
   <div id="controls">
-    <input type="text" id="start" placeholder="Starting point">
-    <input type="text" id="end" placeholder="Ending point">
     <button onclick="handleRouteCalculation()", id="calculate-route-btn">Calculate Route</button>
   </div>
 </body>
