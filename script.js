@@ -5,7 +5,7 @@ let safetyData = {}; // Object to store safety data for each route segment
 // Function to initialize the map
 function initMap() {
     // Initialize the map with default options
-    map = new google.maps.Map(document.getElementById("map"), {
+        map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 30.2672, lng: 97.7431 }, // Default to Austin
         zoom: 10, // Default zoom level
     });
