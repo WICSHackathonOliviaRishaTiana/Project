@@ -29,7 +29,8 @@ async function fetchSafetyData(start, end) {
 // Function to calculate walking routes between two points
 function calculateRoute(start, end) {
     const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
 
     const request = {
         origin: start,
@@ -37,30 +38,23 @@ function calculateRoute(start, end) {
         travelMode: google.maps.TravelMode.WALKING,
     };
 
+
     directionsService.route(request, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
+
+            // Once the route is calculated, fetch safety data for each route segment
+            // Replace "response.routes[0].legs" with the appropriate path in the response object
+            const routeSegments = response.routes[0].legs;
+            routeSegments.forEach(segment => {
+                const start = segment.start_location;
+                const end = segment.end_location;
+                //fetchSafetyData(start, end);
+            });
         } else {
             console.error("Error calculating route:", status);
         }
-    })
-
-    // directionsService.route(request, function(response, status) {
-    //     if (status === google.maps.DirectionsStatus.OK) {
-    //         directionsRenderer.setDirections(response);
-
-    //         // Once the route is calculated, fetch safety data for each route segment
-    //         // Replace "response.routes[0].legs" with the appropriate path in the response object
-    //         const routeSegments = response.routes[0].legs;
-    //         routeSegments.forEach(segment => {
-    //             const start = segment.start_location;
-    //             const end = segment.end_location;
-    //             fetchSafetyData(start, end);
-    //         });
-    //     } else {
-    //         console.error("Error calculating route:", status);
-    //     }
-    // });
+    });
 }
 
 // Function to handle user input and trigger route calculation
