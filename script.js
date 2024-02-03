@@ -1,19 +1,30 @@
 // Define global variables
 let map;
+let sourceAutocomplete,desAutocomplete;
 let safetyData = {}; // Object to store safety data for each route segment
 
 // Function to initialize the map
 function initMap() {
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
     // Initialize the map with default options
-        map = new google.maps.Map(document.getElementById("map"), {
+     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 30.2672, lng: -97.7431 }, // Default to Austin
         zoom: 10, // Default zoom level
     });
+    google.maps.event.addListener(map, "click", function(event){
+        this.setOptions({scrollwheel:true})
+    });
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
+
+    sourceAutoComplete = new google.maps.places.Autocomplete(
+        document.getElementById('start')
+    )
+    desAutoComplete = new google.maps.places.Autocomplete(
+        document.getElementById('end')
+    )
     // Add event listener for the route calculation button
-    document.getElementById("calculate-route-btn").addEventListener("click", handleRouteCalculation);
+    //document.getElementById("calculate-route-btn").addEventListener("click", handleRouteCalculation);
 }
 
 // Function to fetch safety data from external API
