@@ -1,6 +1,7 @@
 // Define global variables
 let map;
 let safetyData = {}; // Object to store safety data for each route segment
+let directionsRenderer;
 
 // Function to initialize the map
 function initMap() {
@@ -10,8 +11,7 @@ function initMap() {
         zoom: 10, // Default zoom level
     });
 
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
 
 
@@ -35,12 +35,15 @@ async function fetchSafetyData(start, end) {
 
 // Function to calculate walking routes between two points
 function calculateRoute(start, end) {
+    console.log(start);
+    console.log(end);
     const request = {
         origin: start,
         destination: end,
         travelMode: google.maps.TravelMode.WALKING,
         provideRouteAlternatives: true
     };
+    const directionsService = new google.maps.DirectionsService();
 
     directionsService.route(request, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
