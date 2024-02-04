@@ -1,0 +1,104 @@
+body {
+  font-family: "Oxygen";
+}
+#product, #cart {
+  margin-left: 50px;
+}
+#product {
+  margin-top: 50px;
+}
+#cart {
+  margin-right:10px;
+}
+#info {
+  border: solid;
+  border-width: 3px;
+  width: 500px;
+  margin: 20px;
+  padding: 10px;
+}
+.navbar-brand, .carousel-caption {
+  font-weight: bolder;
+}
+.carousel-item {
+  height: 400px;
+}
+
+.card {
+  margin: 20px;
+  text-align: center;
+  background-color: #f4eeed
+}
+h1 {
+  text-align: center;
+  margin: 100px;
+}
+#options {
+  left: 170px;
+}
+.form-control{
+  width: 300px;
+}
+form{
+  left: 500px;
+}
+hr, .btn {
+  background-color: #999b84;
+}
+hr {
+  height: 5px;
+}
+#socials {
+  left: 600px;
+}
+.carousel-caption {
+  color: black;
+  position: absolute;
+  top: 10px;
+}
+a, a:hover {
+  color: #999b84;
+}
+#slide3{
+  color:white;
+}
+#follow  {
+  left: 655px;
+}
+#follow, #socials, form, #options {
+  position: relative;
+}
+.fa {
+  font-size: 30px;
+}
+
+@media only screen and (max-width: 768px) {
+  #socials {
+    position: relative;
+    left:50px;
+  }
+  #follow {
+    position: relative;
+    left: 190px;
+  }
+  form {
+    position: relative;
+    left: 50px;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  #socials {
+    left:400px;
+  }
+  #follow {
+    left: 410px;
+  }
+  form {
+    left: 370px;
+  }
+  #socials, #follow, form {
+    position: relative;
+  }
+
+}
