@@ -50,22 +50,22 @@
       </ul>
     </div>
   </nav>
-  <div style = "height: 500px; width: 500px" id="map">
+  <br />
+  <div style = "text-align:center">
+    <h1>Welcome to Fearless Footsteps!</h1>
+    <h5>Please enter your starting location and ending location below to calculate the
+    safest route possible!</h5>
+    </div>
+  <br />
+  <br />
+  <div style = "height: 500px; width: 500px,left:80px" id="map">
   </div>
   <div class="autocomplete-container">
-    <label for="start">Start Location:</label>
+    <label for="start" style = "margin-left: 150px">Start Location:</label>
     <input type="text" id="start" placeholder="Enter start location">
-</div>
-<br />
-<br />
-<br />
-<div class="autocomplete-container">
-    <label for="end">End Location:</label>
+    <label for="end" style = "margin-left: 300px">End Location:</label>
     <input type="text" id="end" placeholder="Enter end location">
 </div>
-<br />
-<br />
-<br />
 <script>
     // Initialize Google Places Autocomplete for start and end inputs
     function initializeAutocomplete() {
@@ -79,9 +79,13 @@
     // Load the Google Maps Places library and initialize autocomplete
     google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
 </script>
-  <div id="controls">
+<br />
+  <div id="controls" style = "margin-left: 700px">
     <button onclick="handleRouteCalculation()", id="calculate-route-btn">Calculate Route</button>
   </div>
+  <br />
+  <br />
+  <br />
 </body>
 
 </html>
