@@ -1,71 +1,61 @@
 // Define global variables
 let map;
-let safetyData = {}; // Object to store safety data for each route segment
 let directionsRenderer;
-let incidentCounter;
-let safetyScore;
+let safetyScore = 0;
+let incidentCounter = 0;
 
 // Function to initialize the map
 function initMap() {
     // Initialize the map with default options
-     map = new google.maps.Map(document.getElementById("map"), {
+    map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 30.2672, lng: -97.7431 }, // Default to Austin
         zoom: 10, // Default zoom level
     });
 
     directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
-
-
-    //document.getElementById("calculate-route-btn").addEventListener("click", handleRouteCalculation);
 }
 
 // Function to fetch safety data from external API
-async function fetchSafetyData(start, end) {
+async function fetchSafetyData(start, end, callback) {
     try {
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    // Parse CSV data into array of objects
-                    const csvData = xhr.responseText;
-                    const rows = csvData.split('\n');
-                    
-                    // Define tolerance for latitude and longitude
-                    const tolerance = 0.015;
+        const response = await fetch('https://data.austintexas.gov/resource/fdj4-gpfu.json');
+        console.log(response.status); // Check HTTP status code
+        console.log(response.statusText);
+        if (!response.ok) {
+            throw new Error('Failed to fetch safety data: ' + response.statusText);
+        }
 
-                    // Initialize incident counter
-                    incidentCounter = 0;
+        const data = await response.json();
 
-                    // Iterate through CSV data rows
-                    for (let i = 1; i < rows.length; i++) {
-                        const values = rows[i].split(',');
-                        const latitude = parseFloat(values[24].trim()); // Column 25 
-                        const longitude = parseFloat(values[25].trim()); // Column 26
+        // Define tolerance for latitude and longitude
+        const tolerance = 0.015;
 
-                        // Check if latitude falls within tolerance of start or end latitude
-                        if (Math.abs(latitude - start.lat) <= tolerance || Math.abs(latitude - end.lat) <= tolerance) {
-                            // Check if longitude falls within tolerance of start or end longitude
-                            if (Math.abs(longitude - start.lng) <= tolerance || Math.abs(longitude - end.lng) <= tolerance) {
-                                // Increment incident counter
-                                incidentCounter++;
-                            }
-                        }
-                    }
+        // Get the latitude and longitude of start and end locations
+        const startLat = start.lat();
+        const startLng = start.lng();
+        const endLat = end.lat();
+        const endLng = end.lng();
 
-                    // Output incident counter
-                    console.log("Incident counter:", incidentCounter);
-                } else {
-                    console.error('Failed to fetch CSV data:', xhr.statusText);
-                }
+        // Initialize incident counter
+        let incidentCounter = 0;
+
+        // Iterate through API data
+        data.forEach(incident => {
+            const latitude = incident.latitude;
+            const longitude = incident.longitude;
+
+            // Check if latitude falls within tolerance of start or end latitude
+            if (((latitude <= (tolerance + startLat) && (startLat - tolerance) <= latitude) || (latitude <= (tolerance + endLat) &&(startLat - tolerance) <= latitude || (endLat - tolerance) <= latitude)) &&
+            (longitude <= (tolerance + startLng) && ((startLng - tolerance) <= longitude))|| (longitude <= (tolerance + endLng) && (endLng - tolerance) <= longitude)) {
+                // Increment incident counter
+                incidentCounter++;
             }
-        };
-        xhr.open('GET', 'path/to/your/csv/file.csv');
-        xhr.send();
-            
-        // Process the safety data and store it in the safetyData object
-        // Example: safetyData[startEndKey] = safetyRating;
-        // You may need to parse and format the data based on the API response structure
+        });
+
+        // Output incident counter
+        console.log("Incident counter:", incidentCounter);
+        callback(incidentCounter); // Invoke callback with incident count
     } catch (error) {
         console.error("Error fetching safety data:", error);
     }
@@ -73,8 +63,6 @@ async function fetchSafetyData(start, end) {
 
 // Function to calculate walking routes between two points
 function calculateRoute(start, end) {
-    console.log(start);
-    console.log(end);
     const request = {
         origin: start,
         destination: end,
@@ -83,20 +71,56 @@ function calculateRoute(start, end) {
     };
     const directionsService = new google.maps.DirectionsService();
     safetyScore = 0;
+    let totalDistance = 0; // Variable to store total distance
+
     directionsService.route(request, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
 
             // Once the route is calculated, fetch safety data for each route segment
             const routeSegments = response.routes[0].legs;
-            routeSegments.forEach(segment => {
-                const start = segment.start_location;
-                const end = segment.end_location;
-                fetchSafetyData(start, end);
-                safetyScore += incidentCounter;
-                console.log("Safety score: " + safetyScore);
+            console.log("Number of route segments:", routeSegments.length); // Log number of route segments
+
+            const promises = routeSegments.map(segment => {
+                return new Promise((resolve, reject) => {
+                    const startLocation = segment.start_location;
+                    const endLocation = segment.end_location;
+                    console.log("Fetching safety data for segment:", startLocation, endLocation); // Log start and end locations
+
+                    // Calculate distance for each segment
+                    const segmentDistance = google.maps.geometry.spherical.computeDistanceBetween(startLocation, endLocation);
+                    totalDistance += segmentDistance;
+
+                    // Fetch safety data for each segment
+                    fetchSafetyData(startLocation, endLocation, (count) => {
+                        safetyScore += count;
+                        console.log("Safety score: " + safetyScore);
+                        resolve();
+                    });
+                });
             });
-            safetyScore = (safetyScore / (17 * 800000)) * 100000;
+
+            // Wait for all promises to resolve
+            Promise.all(promises)
+                .then(() => {
+                    const totalDistanceInMiles = totalDistance / 1609.34; // Convert total distance to miles
+                    safetyScore = (safetyScore/totalDistanceInMiles) / 3;
+                    const paragraphElement = document.getElementById('new-paragraph');
+                    if(safetyScore > 45.782) {
+                        paragraphElement.textContent = 'This route is unsafe. If you are planning to walk this route at night, try to go with a group of people or take a car service.';
+                    }
+                    else if(safetyScore < 37.458) {
+                        paragraphElement.textContent = 'This route is fairly safe. As always try not to walk alone, but this walking path will not be a huge issue';
+                    }
+                    else {
+                        paragraphElement.textContent = 'This route is considered neutral. It follows the average crime rates, but we always advise caution at night.';
+                    }
+                    console.log("Total distance:", totalDistanceInMiles.toFixed(2), "miles"); // Log total distance in miles with two decimal places
+                    console.log("Final safety score:", safetyScore); // Log final safety score
+                })
+                .catch(error => {
+                    console.error("Error fetching safety data:", error);
+                });
         } else {
             console.error("Error calculating route:", status);
         }
@@ -105,9 +129,25 @@ function calculateRoute(start, end) {
 
 // Function to handle user input and trigger route calculation
 function handleRouteCalculation() {
-    const start = document.getElementById('start').value;
-    const end = document.getElementById('end').value;
+    const startInput = document.getElementById('start').value;
+    const endInput = document.getElementById('end').value;
 
-    // Trigger route calculation and safety data fetching
-    calculateRoute(start, end);
+    // Geocode start and end addresses
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: startInput }, function(startResults, status) {
+        if (status === "OK") {
+            const start = startResults[0].geometry.location;
+            geocoder.geocode({ address: endInput }, function(endResults, status) {
+                if (status === "OK") {
+                    const end = endResults[0].geometry.location;
+                    // Trigger route calculation and safety data fetching
+                    calculateRoute(start, end);
+                } else {
+                    console.error("Geocode was not successful for the end address:", status);
+                }
+            });
+        } else {
+            console.error("Geocode was not successful for the start address:", status);
+        }
+    });
 }
