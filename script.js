@@ -61,7 +61,6 @@ async function fetchSafetyData(start, end, callback) {
     }
 }
 
-// Function to calculate walking routes between two points
 function calculateRoute(start, end) {
     const request = {
         origin: start,
@@ -77,42 +76,46 @@ function calculateRoute(start, end) {
         if (status === google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
 
-            // Once the route is calculated, fetch safety data for each route segment
+            // Once the route is calculated, fetch safety data for each route step
             const routeSegments = response.routes[0].legs;
             console.log("Number of route segments:", routeSegments.length); // Log number of route segments
 
             const promises = routeSegments.map(segment => {
-                return new Promise((resolve, reject) => {
-                    const startLocation = segment.start_location;
-                    const endLocation = segment.end_location;
-                    console.log("Fetching safety data for segment:", startLocation, endLocation); // Log start and end locations
+                const steps = segment.steps;
+                return steps.map(step => {
+                    return new Promise((resolve, reject) => {
+                        const startLocation = step.start_location;
+                        const endLocation = step.end_location;
+                        console.log("Fetching safety data for step:", startLocation, endLocation); // Log start and end locations
 
-                    // Calculate distance for each segment
-                    const segmentDistance = google.maps.geometry.spherical.computeDistanceBetween(startLocation, endLocation);
-                    totalDistance += segmentDistance;
+                        // Calculate distance for each step
+                        const stepDistance = google.maps.geometry.spherical.computeDistanceBetween(startLocation, endLocation);
+                        totalDistance += stepDistance;
 
-                    // Fetch safety data for each segment
-                    fetchSafetyData(startLocation, endLocation, (count) => {
-                        safetyScore += count;
-                        console.log("Safety score: " + safetyScore);
-                        resolve();
+                        // Fetch safety data for each step
+                        fetchSafetyData(startLocation, endLocation, (count) => {
+                            safetyScore += count;
+                            console.log("Safety score: " + safetyScore);
+                            resolve();
+                        });
                     });
                 });
             });
 
+            // Flatten the array of promises
+            const flattenedPromises = promises.flat();
+
             // Wait for all promises to resolve
-            Promise.all(promises)
+            Promise.all(flattenedPromises)
                 .then(() => {
                     const totalDistanceInMiles = totalDistance / 1609.34; // Convert total distance to miles
-                    safetyScore = (safetyScore/totalDistanceInMiles) / 3;
+                    safetyScore = (safetyScore / (totalDistanceInMiles * 21));
                     const paragraphElement = document.getElementById('new-paragraph');
-                    if(safetyScore > 45.782) {
+                    if (safetyScore > 45.782) {
                         paragraphElement.textContent = 'This route is unsafe. If you are planning to walk this route at night, try to go with a group of people or take a car service.';
-                    }
-                    else if(safetyScore < 37.458) {
+                    } else if (safetyScore < 37.458) {
                         paragraphElement.textContent = 'This route is fairly safe. As always try not to walk alone, but this walking path will not be a huge issue';
-                    }
-                    else {
+                    } else {
                         paragraphElement.textContent = 'This route is considered neutral. It follows the average crime rates, but we always advise caution at night.';
                     }
                     console.log("Total distance:", totalDistanceInMiles.toFixed(2), "miles"); // Log total distance in miles with two decimal places
